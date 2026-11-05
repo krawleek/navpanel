@@ -9,6 +9,7 @@ const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;',
 const icons = {wardrobe:'b6a6e.svg',wc:'f341f.svg',lift:'6801e.svg',coworking:'02a2b.svg',pool:'9ed24.svg',stairs:'99bf0.svg',site:'ad46e.svg',news:'fcd63.svg',merch:'f15c9.svg'};
 const state = {view:'home',query:'',floor:1,tab:'Все ответы',zoom:1,panX:0,panY:0,keyboard:false,missing:false,kind:'doctor',modal:false};
 let searchTimer, idleTimer, countdownTimer, count = 15, demoController;
+let bannerTimer, bannerIndex = 0;
 const screens = {home:'2272:1898',suggestions:'2272:1938',results:'2272:1970',empty:'2272:2518',loading:'2272:2526',doctor:'2272:2198',service:'2272:2442',route:'2272:2258',site:'2272:2472',news:'2272:2484',article:'2272:2716',merch:'2272:2729',closed:'2272:2550'};
 function resize() {
   const scale = Math.min(innerWidth / 1920, innerHeight / 1080);
@@ -30,9 +31,39 @@ function keyboard() {
  const rows = ['1234567890','ЙЦУКЕНГШЩЗХЪ','ФЫВАПРОЛДЖЭЁ','ЯЧСМИТЬБЮ.,-'];
  return `<div class="keyboard" aria-label="Экранная клавиатура">${rows.map((letters,index)=>`<div class="key-row">${[...letters].map(letter=>`<button class="key" data-key="${escape(letter)}">${letter}</button>`).join('')}${index===0?`<button class="key wide" data-action="backspace" aria-label="Удалить символ">${image('1c00f.svg')}</button>`:''}</div>`).join('')}<div class="key-row"><button class="key space" data-key=" " aria-label="Пробел"></button><button class="key find" data-action="search">Найти</button></div></div>`;
 }
+const bannerData = [
+ {title:'Берегите<br>зрение', art:`${image('cf238.png','promo-eye')}${image('6419b.png','promo-wash')}`, type:'vision', page:'49cc7.svg', link:true},
+ {title:'Прививка вакциной<br>«Пентаксим»<br>до 1 августа', art:image('e068f.png','banner-vaccination'), type:'vaccination', page:'38c24.svg'},
+ {title:'День знаний<br>в клинике', description:'Отмечаем 1 сентября<br>с мишкой Здоровяком', art:image('2ff6b.png','banner-bear'), type:'knowledge', page:'3eb3c.svg'},
+ {title:'Изменение цен<br>с 01.06.2026', art:`<span class="price-art">${image('bf964.png')}<span></span></span>`, type:'prices', page:'5445e.svg', link:true},
+ {title:'Сахарный<br>диабет', description:'Какие признаки<br>не стоит подолгу<br>игнорировать', art:`<span class="diabetes-photo">${image('4e5b8.png')}</span>${image('53941.svg','diabetes-mask')}`, type:'diabetes', page:'463d5.svg', link:true}
+];
+function banners() {
+ return `<section class="banner-carousel" aria-label="Новости и предложения клиники" aria-roledescription="карусель"><div class="banner-track" tabindex="0" aria-label="Прокрутить баннеры">${bannerData.map((banner,index)=>`<div class="promo banner-slide ${banner.type}" role="group" aria-label="${index+1} из 5"><span class="promo-art">${banner.art}</span><div class="banner-copy"><h2>${banner.title}</h2>${banner.description?`<p>${banner.description}</p>`:''}</div>${banner.link?`<button class="circle-arrow banner-link" data-action="article" aria-label="Открыть статью">${image('f0479.svg')}</button>`:''}</div>`).join('')}</div><nav class="banner-pagination" aria-label="Выбор баннера">${image(bannerData[bannerIndex].page,'pagination')}<div>${bannerData.map((banner,index)=>`<button data-banner="${index}" aria-label="Баннер ${index+1}: ${banner.title.replaceAll('<br>',' ')}" aria-current="${index===bannerIndex}"></button>`).join('')}</div></nav></section>`;
+}
+function selectBanner(index, smooth=true) {
+ const track=$('.banner-track');if(!track)return;
+ bannerIndex=(index+bannerData.length)%bannerData.length;
+ track.scrollTo({left:track.clientWidth*bannerIndex,behavior:smooth&&!reduced.matches?'smooth':'instant'});
+ updateBannerPagination();
+}
+function updateBannerPagination() {
+ const pagination=$('.banner-pagination');if(!pagination)return;
+ $('img',pagination).src='assets/'+bannerData[bannerIndex].page;
+ pagination.querySelectorAll('button').forEach((button,index)=>button.setAttribute('aria-current',String(index===bannerIndex)));
+}
+function setupBanners() {
+ clearInterval(bannerTimer);
+ const track=$('.banner-track');if(!track)return;
+ selectBanner(bannerIndex,false);
+ track.addEventListener('scroll',()=>{bannerIndex=Math.round(track.scrollLeft/track.clientWidth);updateBannerPagination();},{passive:true});
+ track.addEventListener('wheel',event=>{if(Math.abs(event.deltaY)>Math.abs(event.deltaX)){event.preventDefault();selectBanner(bannerIndex+(event.deltaY>0?1:-1));}},{passive:false});
+ track.addEventListener('keydown',event=>{if(event.key==='ArrowRight'||event.key==='ArrowLeft'){event.preventDefault();selectBanner(bannerIndex+(event.key==='ArrowRight'?1:-1));}});
+ bannerTimer=setInterval(()=>{if(!document.hidden&&!state.modal&&!$('.banner-carousel')?.contains(document.activeElement))selectBanner(bannerIndex+1);},6000);
+}
 function home() {
  const destinations=[['wardrobe','Гардероб'],['wc','Туалеты'],['lift','Лифты'],['coworking','Коворкинг'],['pool','Бассейн'],['stairs','Лестницы']];
- return `<div class="home-title"><h1>Куда идёте?</h1></div>${searchField()}<div class="quick-grid">${destinations.map(([key,label])=>`<button class="quick" data-action="quick-${key}">${disc(icons[key])}<span>${label}</span></button>`).join('')}</div><button class="promo" data-action="article" aria-label="Берегите зрение — открыть статью"><span class="promo-art">${image('cf238.png','promo-eye')}${image('6419b.png','promo-wash')}</span><h2>Берегите<br>зрение</h2>${image('49cc7.svg','pagination')}<span class="circle-arrow">${image('f0479.svg')}</span></button><nav class="footer" aria-label="Информация о клинике">${[['site','Сайт'],['news','Новости'],['merch','Сувениры']].map(([key,label])=>`<button data-action="${key}">${disc(icons[key])}<span>${label}</span></button>`).join('')}</nav>`;
+ return `<div class="home-title"><h1>Куда идёте?</h1></div>${searchField()}<div class="quick-grid">${destinations.map(([key,label])=>`<button class="quick" data-action="quick-${key}">${disc(icons[key])}<span>${label}</span></button>`).join('')}</div>${banners()}<nav class="footer" aria-label="Информация о клинике">${[['site','Сайт'],['news','Новости'],['merch','Сувениры']].map(([key,label])=>`<button data-action="${key}">${disc(icons[key])}<span>${label}</span></button>`).join('')}</nav>`;
 }
 function suggestions() { return `<div class="list">${row('Махонин Денис Александрович','Остеопат ·','doctor','МД')}${row('Махонин Денис Александрович','Остеопат ·','doctor','d2ed7.png')}</div>`; }
 function results() {
@@ -79,11 +110,28 @@ function merch() {
 function closed() {return `${back()}<div class="card"><h2>Кабинет 205</h2><p>Эндоскопический кабинет</p><p style="margin-top:16px">2 этаж · Отделение диагностики</p><div class="status" style="margin-top:28px">${image('11368.svg')}<div>Идёт ремонт<small>Кабинет временно недоступен</small></div></div><hr>${row('Колоноскопия под наркозом','Диагностика · ок. 40 мин','service','aee86.svg')}</div>`;}
 function render(animate=true) {
  clearTimeout(searchTimer);
+ clearInterval(bannerTimer);
  panel.dataset.screen = state.missing?`missing-${state.view}`:state.view;
  const isSearch=['suggestions','results','empty','loading'].includes(state.view);
  const content=state.view==='home'?home():isSearch?searchContent():state.view==='doctor'?doctor():state.view==='service'?service():state.view==='route'?route():state.view==='merch'?merch():state.view==='closed'?closed():qr();
  panel.innerHTML=`<div class="panel-view ${['home',...['suggestions','results','empty','loading']].includes(state.view)?'':'details'} ${isSearch?'searching':''} ${animate?'enter':''}" data-node-id="${screens[state.view]||''}">${content}</div>`;
+ // Keep the primary action outside the scrolling content on details and routes.
+ if (['doctor', 'service', 'route'].includes(state.view) && !state.missing) {
+  const view = $('.panel-view', panel);
+  const action = view.lastElementChild;
+  if (action?.classList.contains('primary')) {
+   view.classList.add('has-pinned-action');
+   const content = document.createElement('div');
+   content.className = 'panel-content';
+   while (view.firstElementChild !== action) content.append(view.firstElementChild);
+   const footer = document.createElement('div');
+   footer.className = 'panel-action';
+   footer.append(action);
+   view.append(content, footer);
+  }
+ }
  renderMap();
+ setupBanners();
  if(state.keyboard){const input=$('#search-input');input?.focus({preventScroll:true});input?.setSelectionRange(state.query.length,state.query.length);}
 }
 function renderMap() {
@@ -123,7 +171,7 @@ function resetIdle() {
 }
 function showTimeout(){
  if(state.modal)return;state.modal=true;count=15;
- $('#modal-root').innerHTML=`<div class="modal-backdrop"><section class="timeout" role="dialog" aria-modal="true" aria-labelledby="timeout-title"><div class="countdown">${image('824d3.svg')}<strong id="countdown-number">15</strong><small>секунд</small></div><h2 id="timeout-title">Вы ещё здесь?</h2><p>Мы скоро вернёмся на главный экран, чтобы следующий посетитель мог воспользоваться терминалом</p>${primary('Продолжить работу','continue')}</section></div>`;
+ $('#modal-root').innerHTML=`<div class="modal-backdrop"><section class="timeout" role="dialog" aria-modal="true" aria-labelledby="timeout-title"><div class="countdown">${image('824d3.svg')}<strong id="countdown-number">15</strong><small>секунд</small></div><div class="timeout-message"><h2 id="timeout-title">Вы ещё здесь?</h2><p>Мы скоро вернёмся на главный экран, чтобы следующий посетитель мог воспользоваться терминалом</p></div><button class="primary timeout-continue" data-action="continue">Продолжить работу</button></section></div>`;
  $('[data-action="continue"]').focus();
  countdownTimer=setInterval(()=>{count--;$('#countdown-number').textContent=count;if(count<=0){closeTimeout();navigate('home');}},1000);
 }
@@ -144,6 +192,7 @@ function action(name){
 }
 document.addEventListener('click',event=>{
  const button=event.target.closest('button');if(!button)return;
+ if(button.dataset.banner!==undefined)selectBanner(Number(button.dataset.banner));
  if(button.dataset.action)action(button.dataset.action);
  if(button.dataset.floor){state.floor=Number(button.dataset.floor);renderMap();announce(`${state.floor} этаж`);}
  if(button.dataset.tab){state.tab=button.dataset.tab;render(false);}
