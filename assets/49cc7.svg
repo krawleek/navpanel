@@ -1,0 +1,9 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="192" height="16" viewBox="0 0 192 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Pagination">
+<path id="Rectangle 1" d="M0 8C0 3.58172 3.58172 0 8 0H24C28.4183 0 32 3.58172 32 8V8C32 12.4183 28.4183 16 24 16H8C3.58172 16 0 12.4183 0 8V8Z" fill="#7C969F"/>
+<circle id="Inactive page" cx="64" cy="8" r="8" fill="#133D49"/>
+<circle id="Inactive page_2" cx="104" cy="8" r="8" fill="#133D49"/>
+<circle id="Inactive page_3" cx="144" cy="8" r="8" fill="#133D49"/>
+<circle id="Inactive page_4" cx="184" cy="8" r="8" fill="#133D49"/>
+</g>
+</svg>

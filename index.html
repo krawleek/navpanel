@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e8edef">
+  <title>Наше Здоровье — навигация по клинике</title>
+  <link rel="preload" href="assets/golos-text.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="stage" aria-label="Навигация по клинике">
+    <section class="map-area" aria-label="Карта клиники">
+      <button class="brand" data-action="home" aria-label="На главную"><img src="assets/12b1c.png" width="40" height="40" alt=""><img src="assets/5da91.png" width="202" height="26.367" alt="Наше Здоровье"></button>
+      <div class="map-viewport"><div id="map-world">
+        <img class="floor-plan" src="assets/bc7a2.png" width="1106" height="808" alt="План этажа клиники">
+        <div id="map-overlays"></div>
+      </div></div>
+      <div class="map-controls"><div class="floor-controls" aria-label="Выбор этажа"></div><div class="zoom-controls"><button data-action="zoom-in" aria-label="Увеличить карту"><img src="assets/aa8b6.svg" alt=""></button><button data-action="zoom-out" aria-label="Уменьшить карту"><img src="assets/e26d4.svg" alt=""></button><span class="control-divider"></span><button data-action="reset-map" aria-label="Вернуть исходный вид карты"><img src="assets/56933.svg" alt=""></button></div></div>
+    </section>
+    <aside id="panel" aria-label="Поиск и направления"></aside>
+    <div id="modal-root"></div>
+    <div id="demo-cursor" aria-hidden="true"><svg width="30" height="36" viewBox="0 0 30 36"><path d="M3 2L25 21L15 23L10 33Z" fill="#133d49" stroke="white" stroke-width="2.5" stroke-linejoin="round"/></svg></div>
+    <div class="sr-only" id="announcement" role="status" aria-live="polite"></div>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
