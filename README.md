@@ -25,3 +25,5 @@ Search and navigation use local sample content from the Figma file. Routes are i
 Motion uses StageShow's measured targets, cause-and-effect beats, short feedback and a held route payoff, implemented in vanilla JavaScript to honor the requested stack. Reduced-motion preferences keep states immediately legible and remove spatial transitions.
 
 `npm run check` checks JavaScript syntax. Browser verification covers all 17 supplied screen states and the main search → doctor → route flow.
+
+Home banners rotate every six seconds and support pagination, horizontal scrolling, and arrow keys. Rotation pauses while the carousel has keyboard focus or the tab is hidden. Hover styling is disabled throughout the prototype.

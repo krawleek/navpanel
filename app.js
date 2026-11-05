@@ -33,8 +33,8 @@ function keyboard() {
 }
 const bannerData = [
  {title:'Берегите<br>зрение', art:`${image('cf238.png','promo-eye')}${image('6419b.png','promo-wash')}`, type:'vision', page:'49cc7.svg', link:true},
- {title:'Прививка вакциной<br>«Пентаксим»<br>до 1 августа', art:image('e068f.png','banner-vaccination'), type:'vaccination', page:'38c24.svg'},
- {title:'День знаний<br>в клинике', description:'Отмечаем 1 сентября<br>с мишкой Здоровяком', art:image('2ff6b.png','banner-bear'), type:'knowledge', page:'3eb3c.svg'},
+ {title:'Прививка вакциной<br>«Пентаксим»<br>до 1 августа', art:image('banner-vaccination.png','banner-vaccination'), type:'vaccination', page:'38c24.svg'},
+ {title:'День знаний<br>в клинике', description:'Отмечаем 1 сентября<br>с мишкой Здоровяком', art:image('banner-knowledge.png','banner-bear'), type:'knowledge', page:'3eb3c.svg'},
  {title:'Изменение цен<br>с 01.06.2026', art:`<span class="price-art">${image('bf964.png')}<span></span></span>`, type:'prices', page:'5445e.svg', link:true},
  {title:'Сахарный<br>диабет', description:'Какие признаки<br>не стоит подолгу<br>игнорировать', art:`<span class="diabetes-photo">${image('4e5b8.png')}</span>${image('53941.svg','diabetes-mask')}`, type:'diabetes', page:'463d5.svg', link:true}
 ];
